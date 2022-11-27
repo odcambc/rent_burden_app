@@ -16,7 +16,7 @@ acs_5_2020_all_data <- get_acs(
   year = 2020
 )
 
-st_write(acs_5_2020_all_data, "acs5.shp")
+st_write(acs_5_2020_all_data, "rentburden/acs5.shp")
 
 acs_1_2021_all_puma_data <- get_acs(
   state = "CA",
@@ -28,4 +28,4 @@ acs_1_2021_all_puma_data <- get_acs(
   year = 2021
 )
 
-st_write(acs_1_2021_all_puma_data, "acs1_puma.shp")
+st_write(acs_1_2021_all_puma_data, "rentburden/acs1_puma.shp")
