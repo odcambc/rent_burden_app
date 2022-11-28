@@ -30,7 +30,6 @@ library(dplyr)
 library(ggplot2)
 library(ggforce)
 library(sf)
-library(cowplot)
 
 # Housing data gets generated and written in associated R files, not here.
 housing_data_acs5 = st_read("acs5.shp")
