@@ -30,6 +30,7 @@ library(dplyr)
 library(ggplot2)
 library(ggforce)
 library(sf)
+library(cowplot)
 
 # Housing data gets generated and written in associated R files, not here.
 housing_data_acs5 = st_read("acs5.shp")
@@ -128,7 +129,8 @@ ui <- fluidPage(
 
         # Draws the output
         mainPanel(
-           plotOutput("burdenPlot", height = "auto")
+          verbatimTextOutput("clientdataText"),
+          plotOutput("burdenPlot", height = "auto")
         )
     )
 )
@@ -180,7 +182,7 @@ server <- function(input, output, session) {
 
       main_plot <- ggplot() + 
         geom_sf(data = housing_data %>% filter(variable == housing_variable), aes(fill = estimate), color = "black", alpha = alpha,) + 
-        geom_sf(data = housing_data %>% filter(variable == housing_variable & estimate < cutoff), aes(fill = estimate)) + 
+        geom_sf(data = housing_data %>% filter(variable == housing_variable & estimate < cutoff), aes(fill = estimate), legend.title = 'Median rent (dollars)',) + 
         scale_fill_viridis_c(option = color_scale, direction = direction, na.value = "green") +
         xlim(xmin, xmax) +
         ylim(ymin, ymax) +
@@ -191,7 +193,11 @@ server <- function(input, output, session) {
         annotate("text", x = (scale_x_start + scale_x_end)/2, y = scale_y - (window/50)/69, size = 6, label = scale_text) +
         theme_classic() +
         ggtitle(title) + 
-        theme(legend.position='right',
+        labs(fill = "Median rent (dollars)") +
+        theme(legend.position='bottom',
+              legend.key.width = unit(0.1, 'npc'),
+              legend.title = element_text(size=22),
+              legend.text = element_text(size=16),
               axis.title.x=element_blank(),
               axis.text.x=element_blank(),
               axis.ticks.x=element_blank(),
@@ -199,13 +205,14 @@ server <- function(input, output, session) {
               axis.text.y=element_blank(),
               axis.ticks.y=element_blank())
       
+
       if(input$circle) {
         main_plot <- main_plot + geom_ellipse(data = campus, linetype = "solid", aes(x0 = longitude, y0 = latitude, b = distance/69, a = distance/54.6, angle=0))
       }
       
       return(main_plot)
       
-    }, height = 800, width = 800)
+    }, height = reactive(session$clientData$output_burdenPlot_width), width = reactive(session$clientData$output_burdenPlot_width))
 }
 
 # Run the application 
